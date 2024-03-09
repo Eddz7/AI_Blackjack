@@ -1,34 +1,9 @@
 import pygame
-from pygame.locals import *
 import random
 
-# Initialize pygame
-pygame.init()
-# Set display dimensions
-screen_width, screen_height = 800, 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-
-icon = pygame.image.load('resources/icon.png')
-cardback = pygame.image.load('resources/cards/cardback.png')
-pygame.display.set_icon(icon)
-
-# Define Card class
 class Card:
     def __init__(self, name):
         self.name = name
-        self.value = self.get_value()
-
-    def get_value(self):
-        # this tries to convert the entire string except for the suit to an int
-        if self.name[:-1].isnumeric():
-            return int(self.name[:-1])
-        elif self.name[0] in ['j', 'q', 'k']:
-            return 10
-        # future implementation: use a boolean to check if hand has an ace and total value > 21, then subtract 10
-        elif self.name[0] == 'a':
-            return 11
-        else:
-            raise ValueError("Invalid card name")
 
     def load_image(self):
         return pygame.image.load(f'resources/cards/{self.name}.png')
@@ -41,27 +16,39 @@ class Card:
         random.shuffle(deck)
         return deck
 
-# Load card images
-deck = Card.generate_deck()
+class Blackjack:
+    def __init__(self):
+        self.deck = Card.generate_deck()
+        self.player_hand = []
+        self.dealer_hand = []
 
-for card in deck:
-    card.image = card.load_image()
+    def deal_card(self):
+        return self.deck.pop()
 
-total = 0
-for i in range(len(deck)):
-    total += deck[i].get_value()
-print(total)
-# Display first card image
-first_card_image = deck[0].image
-screen.blit(first_card_image, (screen_width//2 - first_card_image.get_width()//2, screen_height//2 - first_card_image.get_height()//2))
-pygame.display.flip()
+    def start_game(self):
+        self.player_hand = [self.deal_card(), self.deal_card()]
+        self.dealer_hand = [self.deal_card(), self.deal_card()]
 
-# Main loop
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    def get_value(self, hand):
+        value = 0
+        aces = 0
+        for card in hand:
+            # this tries to convert the entire string except for the suit to an int
+            if card.name[:-1].isnumeric():
+                value += int(card.name[:-1])
+            elif card.name[0] in ['j', 'q', 'k']:
+                value += 10
+            elif card.name[0] == 'a':
+                value += 11
+                aces += 1
+        # blackjack aces implementation
+        while value > 21 and aces:
+            value -= 10
+            aces -= 1
+        return value
 
-# Quit pygame
-pygame.quit()
+def main():
+    pass
+
+if __name__ == '__main__':
+    main()
