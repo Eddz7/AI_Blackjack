@@ -137,8 +137,8 @@ class BlackjackQLearning:
 
 # Train the agent
 agent = BlackjackQLearning()
-agent.train(50000)
-test_games = 10000
+agent.train(1000000)
+test_games = 100000
 wins = 0
 losses = 0
 draws = 0
